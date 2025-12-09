@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Interactif</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+```
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 20px;
+        min-height: 100vh;
+    }
+    
+    .container {
+        max-width: 900px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        padding: 40px;
+    }
+    
+    h1 {
+        color: #667eea;
+        text-align: center;
+        margin-bottom: 30px;
+        font-size: 2em;
+    }
+    
+    .question-block {
+        margin-bottom: 25px;
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 10px;
+        border-left: 4px solid #667eea;
+        transition: all 0.3s ease;
+    }
+    
+    .question-block:hover {
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        transform: translateX(5px);
+    }
+    
+    .question-text {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 15px;
+        font-size: 1.1em;
+    }
+    
+    .options {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+    
+    .option {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        padding: 10px 15px;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+    }
+    
+    .option:hover {
+        background: #e9ecef;
+    }
+    
+    .option input[type="radio"] {
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+        accent-color: #667eea;
+    }
+    
+    .option label {
+        cursor: pointer;
+        font-size: 1em;
+        color: #555;
+    }
+    
+    .submit-btn {
+        display: block;
+        width: 100%;
+        max-width: 300px;
+        margin: 40px auto;
+        padding: 15px 30px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        font-size: 1.2em;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+    }
+    
+    .submit-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+    }
+    
+    .submit-btn:active {
+        transform: translateY(0);
+    }
+    
+    .results {
+        display: none;
+        margin-top: 40px;
+        padding: 30px;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 15px;
+    }
+    
+    .results h2 {
+        color: #667eea;
+        text-align: center;
+        margin-bottom: 30px;
+        font-size: 1.8em;
+    }
+    
+    .score-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+    
+    .score-card {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    }
+    
+    .score-card h3 {
+        color: #667eea;
+        margin-bottom: 10px;
+        font-size: 1.2em;
+    }
+    
+    .score-card .score {
+        font-size: 2em;
+        font-weight: bold;
+        color: #764ba2;
+    }
+    
+    .chart-container {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    }
+    
+    canvas {
+        max-height: 600px;
+        height: 600px !important;
+    }
+    
+    .reset-btn {
+        display: block;
+        width: 100%;
+        max-width: 200px;
+        margin: 30px auto 0;
+        padding: 12px 25px;
+        background: #6c757d;
+        color: white;
+        border: none;
+        border-radius: 50px;
+        font-size: 1em;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .reset-btn:hover {
+        background: #5a6268;
+        transform: translateY(-2px);
+    }
+    
+    @media (max-width: 768px) {
+        .container {
+            padding: 20px;
+        }
+        
+        h1 {
+            font-size: 1.5em;
+        }
+        
+        .question-text {
+            font-size: 1em;
+        }
+        
+        .options {
+            flex-direction: column;
+        }
+    }
+</style>
+```
+
+</head>
+<body>
+    <div class="container">
+        <h1>📝 Test d'Évaluation</h1>
+
+```
+    <form id="testForm">
+        <!-- Les 60 questions seront générées ici -->
+    </form>
+    
+    <button type="button" class="submit-btn" onclick="calculateResults()">Calculer les résultats</button>
+    
+    <div class="results" id="results">
+        <h2>📊 Vos Résultats</h2>
+        <div class="score-grid">
+            <div class="score-card">
+                <h3>Fuite et Passivité</h3>
+                <div class="score" id="score1">0/15</div>
+            </div>
+            <div class="score-card">
+                <h3>Agressivité</h3>
+                <div class="score" id="score2">0/15</div>
+            </div>
+            <div class="score-card">
+                <h3>Manipulation</h3>
+                <div class="score" id="score3">0/15</div>
+            </div>
+            <div class="score-card">
+                <h3>Assertivité</h3>
+                <div class="score" id="score4">0/15</div>
+            </div>
+        </div>
+        
+        <div class="chart-container">
+            <canvas id="resultsChart"></canvas>
+        </div>
+        
+        <button type="button" class="reset-btn" onclick="resetTest()">Recommencer</button>
+    </div>
+</div>
+
+<script>
+    // Mapping des questions aux catégories (basé sur le tableau page 3)
+    // Chaque catégorie contient 15 questions
+    const categoryMapping = {
+        1: [1, 7, 15, 16, 17, 25, 26, 35, 36, 37, 50, 51, 52, 59, 60], // Fuite et Passivité
+        2: [4, 6, 10, 11, 20, 21, 28, 29, 30, 39, 40, 48, 49, 55, 56], // Agressivité
+        3: [3, 5, 9, 12, 13, 19, 22, 31, 32, 41, 42, 46, 47, 54, 57], // Manipulation
+        4: [2, 8, 14, 18, 23, 24, 27, 33, 34, 38, 43, 44, 45, 53, 58]  // Assertivité
+    };
+
+    // Questions du test
+    const questions = [
+        "Je me sens souvent débordé(e) par mes émotions",
+        "J'ai du mal à exprimer ce que je ressens",
+        "Je préfère éviter les conflits même si j'ai raison",
+        "J'ai tendance à remettre les choses à plus tard",
+        "Je suis très critique envers moi-même",
+        "J'ai du mal à dire non aux autres",
+        "Je me sens souvent anxieux(se) sans raison apparente",
+        "Je manque de motivation pour atteindre mes objectifs",
+        "Je doute souvent de mes capacités",
+        "J'ai du mal à maintenir des relations stables",
+        "Je me sens souvent fatigué(e) même après avoir dormi",
+        "J'ai du mal à me concentrer sur une tâche",
+        "Je pense souvent au passé avec regret",
+        "J'ai du mal à accepter les compliments",
+        "Je me sens souvent seul(e) même entouré(e)",
+        "J'ai tendance à dramatiser les situations",
+        "Je me compare souvent aux autres",
+        "J'ai du mal à gérer mon temps efficacement",
+        "Je ressens souvent de la colère que je ne peux pas exprimer",
+        "J'ai du mal à prendre des décisions importantes",
+        "Je me sens souvent incompris(e) par les autres",
+        "J'ai tendance à négliger mes propres besoins",
+        "Je m'inquiète beaucoup pour l'avenir",
+        "J'ai du mal à terminer ce que je commence",
+        "Je cherche constamment l'approbation des autres",
+        "J'ai du mal à établir des limites claires",
+        "Je me sens souvent submergé(e) par le stress",
+        "Je procrastine même pour les choses importantes",
+        "Je manque de confiance en mes jugements",
+        "J'évite de parler de mes problèmes personnels",
+        "Je me sens souvent triste sans raison précise",
+        "J'ai du mal à m'affirmer dans un groupe",
+        "Je ressens de la culpabilité fréquemment",
+        "J'ai tendance à fuir mes responsabilités",
+        "Je doute de l'amour que les autres me portent",
+        "J'ai du mal à gérer les critiques",
+        "Je me sens souvent nerveux(se) en public",
+        "Je manque d'organisation dans ma vie quotidienne",
+        "Je pense que je ne suis jamais assez bon(ne)",
+        "J'ai peur de l'échec plus que la moyenne",
+        "Je me sens souvent vidé(e) émotionnellement",
+        "J'ai du mal à maintenir ma concentration",
+        "Je rumine souvent les mêmes pensées négatives",
+        "J'ai tendance à m'isoler socialement",
+        "Je me sens souvent démotivé(e) au travail/études",
+        "J'ai du mal à exprimer mes besoins clairement",
+        "Je ressens souvent de l'anxiété face au changement",
+        "Je repousse souvent les tâches désagréables",
+        "Je cherche la perfection de manière excessive",
+        "J'ai du mal à faire confiance aux autres",
+        "Je me sens souvent découragé(e) face aux obstacles",
+        "J'ai tendance à éviter les situations nouvelles",
+        "Je me sens coupable de prendre du temps pour moi",
+        "J'ai du mal à accepter mes erreurs",
+        "Je me sens souvent incompétent(e) dans ce que je fais",
+        "J'ai peur du jugement des autres",
+        "Je me sens souvent épuisé(e) mentalement",
+        "Je manque de clarté dans mes objectifs de vie",
+        "Je doute souvent de mes choix passés",
+        "J'ai du mal à demander de l'aide quand j'en ai besoin"
+    ];
+
+    // Générer les questions
+    const form = document.getElementById('testForm');
+    questions.forEach((question, index) => {
+        const questionNum = index + 1;
+        const questionBlock = document.createElement('div');
+        questionBlock.className = 'question-block';
+        questionBlock.innerHTML = `
+            <div class="question-text">${questionNum}. ${question}</div>
+            <div class="options">
+                <div class="option">
+                    <input type="radio" id="q${questionNum}_vrai" name="q${questionNum}" value="vrai">
+                    <label for="q${questionNum}_vrai">Vrai</label>
+                </div>
+                <div class="option">
+                    <input type="radio" id="q${questionNum}_faux" name="q${questionNum}" value="faux">
+                    <label for="q${questionNum}_faux">Faux</label>
+                </div>
+            </div>
+        `;
+        form.appendChild(questionBlock);
+    });
+
+    let chart = null;
+
+    function calculateResults() {
+        // Vérifier que toutes les questions ont une réponse
+        let allAnswered = true;
+        for (let i = 1; i <= 60; i++) {
+            const answer = document.querySelector(`input[name="q${i}"]:checked`);
+            if (!answer) {
+                allAnswered = false;
+                break;
+            }
+        }
+
+        if (!allAnswered) {
+            alert('⚠️ Veuillez répondre à toutes les questions avant de calculer les résultats.');
+            return;
+        }
+
+        // Calculer les scores pour chaque catégorie
+        const scores = {1: 0, 2: 0, 3: 0, 4: 0};
+
+        for (let category = 1; category <= 4; category++) {
+            categoryMapping[category].forEach(questionNum => {
+                const answer = document.querySelector(`input[name="q${questionNum}"]:checked`);
+                if (answer && answer.value === 'vrai') {
+                    scores[category]++;
+                }
+            });
+        }
+
+        // Afficher les scores
+        document.getElementById('score1').textContent = `${scores[1]}/15`;
+        document.getElementById('score2').textContent = `${scores[2]}/15`;
+        document.getElementById('score3').textContent = `${scores[3]}/15`;
+        document.getElementById('score4').textContent = `${scores[4]}/15`;
+
+        // Afficher les résultats
+        document.getElementById('results').style.display = 'block';
+        document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+
+        // Créer l'histogramme
+        createChart(scores);
+    }
+
+    function createChart(scores) {
+        const ctx = document.getElementById('resultsChart').getContext('2d');
+        
+        // Détruire le graphique précédent s'il existe
+        if (chart) {
+            chart.destroy();
+        }
+
+        chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Fuite et Passivité', 'Agressivité', 'Manipulation', 'Assertivité'],
+                datasets: [{
+                    label: 'Score sur 15',
+                    data: [scores[1], scores[2], scores[3], scores[4]],
+                    backgroundColor: [
+                        'rgba(102, 126, 234, 0.8)',
+                        'rgba(118, 75, 162, 0.8)',
+                        'rgba(237, 100, 166, 0.8)',
+                        'rgba(255, 154, 158, 0.8)'
+                    ],
+                    borderColor: [
+                        'rgba(102, 126, 234, 1)',
+                        'rgba(118, 75, 162, 1)',
+                        'rgba(237, 100, 166, 1)',
+                        'rgba(255, 154, 158, 1)'
+                    ],
+                    borderWidth: 2,
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        min: 0,
+                        max: 15,
+                        ticks: {
+                            stepSize: 1,
+                            font: {
+                                size: 12
+                            },
+                            callback: function(value) {
+                                return value;
+                            }
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.1)'
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            font: {
+                                size: 12
+                            }
+                        },
+                        grid: {
+                            display: false
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        labels: {
+                            font: {
+                                size: 14
+                            }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        padding: 12,
+                        titleFont: {
+                            size: 14
+                        },
+                        bodyFont: {
+                            size: 13
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function resetTest() {
+        // Réinitialiser le formulaire
+        document.getElementById('testForm').reset();
+        
+        // Cacher les résultats
+        document.getElementById('results').style.display = 'none';
+        
+        // Détruire le graphique
+        if (chart) {
+            chart.destroy();
+            chart = null;
+        }
+        
+        // Retour en haut de page
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+</script>
+```
+
+</body>
+</html>
